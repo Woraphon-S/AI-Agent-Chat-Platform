@@ -22,7 +22,7 @@ const seedAdmin = async (retries = 5) => {
     try {
       const adminEmail = 'admin@example.com';
       const existingAdmin = await prisma.user.findUnique({ where: { email: adminEmail } });
-      
+
       if (!existingAdmin) {
         const hashedPassword = await bcrypt.hash('admin123', 10);
         await prisma.user.create({
@@ -51,6 +51,7 @@ app.use(errorHandler);
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date() });
 });
+
 
 app.listen(PORT, async () => {
   await seedAdmin();

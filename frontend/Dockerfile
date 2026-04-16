@@ -7,11 +7,9 @@ COPY . .
 RUN npm run build
 
 # Production stage
-FROM nginx:stable-alpine AS runner
-WORKDIR /usr/share/nginx/html
-# Copy built files from builder
-COPY --from=builder /app/dist .
-# Copy custom nginx config
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+FROM node:20-slim AS runner
+WORKDIR /app
+RUN npm install -g serve
+COPY --from=builder /app/dist ./dist
+EXPOSE 3000
+CMD ["serve", "-s", "dist", "-l", "3000"]

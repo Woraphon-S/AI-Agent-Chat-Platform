@@ -23,6 +23,8 @@ services:
       - NODE_ENV=production
     env_file:
       - ./backend/.env
+    ports:
+      - "6060:5000"
     depends_on:
       - db
     networks:
@@ -33,7 +35,9 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "80:80"
+      - "3005:3000"
+    environment:
+      - VITE_API_URL=http://localhost:5000/api
     depends_on:
       - backend
     networks:
