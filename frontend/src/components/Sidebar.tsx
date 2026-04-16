@@ -13,7 +13,7 @@ export const Sidebar: React.FC = () => {
   }, []);
 
   return (
-    <div className="w-80 h-full bg-white border-r border-gray-100 flex flex-col p-4">
+    <div className="w-80 h-full bg-white border-r border-gray-100 flex flex-col p-4 z-10 shadow-[10px_0_30px_rgba(0,0,0,0.03)]">
       <div className="flex items-center gap-2 mb-8 px-2">
         <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
           <Cpu className="text-white w-5 h-5" />

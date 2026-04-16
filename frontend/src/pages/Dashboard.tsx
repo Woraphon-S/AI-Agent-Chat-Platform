@@ -6,7 +6,7 @@ export const Dashboard: React.FC = () => {
   return (
     <div className="flex h-screen w-full bg-white overflow-hidden">
       <Sidebar />
-      <main className="flex-1 h-full overflow-hidden">
+      <main className="flex-1 h-full overflow-hidden flex flex-col">
         <ChatArea />
       </main>
     </div>

@@ -16,7 +16,7 @@ RUN npm run build
 
 # Production stage
 FROM base AS runner
-COPY --from=deps /app/node_modules ./node_modules
+COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 COPY package.json ./

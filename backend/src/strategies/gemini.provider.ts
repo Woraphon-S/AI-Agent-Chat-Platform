@@ -2,13 +2,17 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { LLMProvider, ChatMessage, LLMResponse } from './llm.strategy';
 
 export class GeminiProvider extends LLMProvider {
+  private genAI: any;
+  private model: any;
+
   getName(): string {
     return 'gemini';
   }
 
   async generateResponse(messages: ChatMessage[], apiKey: string): Promise<LLMResponse> {
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    this.genAI = new GoogleGenerativeAI(apiKey);
+    console.log(`🤖 Attempting Gemini call with model: gemini-pro (v1)`);
+    this.model = this.genAI.getGenerativeModel({ model: 'gemini-pro' }, { apiVersion: 'v1' });
 
     // Separate last message as the new prompt, others as context
     const lastMessage = messages[messages.length - 1].content;
@@ -17,7 +21,7 @@ export class GeminiProvider extends LLMProvider {
       parts: [{ text: msg.content }],
     }));
 
-    const chat = model.startChat({
+    const chat = this.model.startChat({
       history,
     });
 

@@ -6,8 +6,8 @@ import { Cpu } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 export const LoginPage: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('admin@example.com');
+  const [password, setPassword] = useState('admin123');
   const [isRegister, setIsRegister] = useState(false);
   const setAuth = useAuthStore(state => state.setAuth);
 

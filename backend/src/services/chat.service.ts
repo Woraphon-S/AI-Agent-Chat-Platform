@@ -5,6 +5,8 @@ import { ChatMessage } from '../strategies/llm.strategy';
 export class ChatService {
   async sendMessage(userId: string, chatId: string, content: string, providerName: string) {
     // 1. Get user's API key for the provider
+    let apiKey: string | undefined;
+    
     const apiKeyRecord = await prisma.apiKey.findUnique({
       where: {
         userId_provider: {
@@ -14,7 +16,16 @@ export class ChatService {
       },
     });
 
-    if (!apiKeyRecord) {
+    if (apiKeyRecord) {
+      apiKey = apiKeyRecord.key;
+    } else {
+      // Fallback to environment variables for portfolio demo
+      apiKey = providerName === 'gemini' 
+        ? process.env.GEMINI_API_KEY 
+        : process.env.OPENAI_API_KEY;
+    }
+
+    if (!apiKey) {
       throw new Error(`API key for ${providerName} not found. Please add it in settings.`);
     }
 
@@ -34,7 +45,7 @@ export class ChatService {
 
     // 3. Get AI Response
     const provider = ProviderFactory.getProvider(providerName);
-    const aiResponse = await provider.generateResponse(messages, apiKeyRecord.key);
+    const aiResponse = await provider.generateResponse(messages, apiKey!);
 
     // 4. Save messages to DB
     await prisma.message.create({
