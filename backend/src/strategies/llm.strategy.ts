@@ -9,5 +9,5 @@ export interface LLMResponse {
 
 export abstract class LLMProvider {
   abstract getName(): string;
-  abstract generateResponse(messages: ChatMessage[], apiKey: string): Promise<LLMResponse>;
+  abstract generateResponse(messages: ChatMessage[], apiKey: string, systemPrompt?: string): Promise<LLMResponse>;
 }

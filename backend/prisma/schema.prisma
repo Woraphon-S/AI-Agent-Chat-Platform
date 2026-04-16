@@ -8,14 +8,16 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  name      String?
-  chats     Chat[]
-  apiKeys   ApiKey[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String   @id @default(uuid())
+  email         String   @unique
+  password      String
+  name          String?
+  avatarUrl     String?
+  systemPrompt  String?  @db.Text
+  chats         Chat[]
+  apiKeys       ApiKey[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model Chat {
@@ -42,7 +44,7 @@ model ApiKey {
   id        String   @id @default(uuid())
   userId    String
   user      User      @relation(fields: [userId], references: [id])
-  provider  String   // 'openai', 'gemini'
+  provider  String   // 'gemini'
   key       String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

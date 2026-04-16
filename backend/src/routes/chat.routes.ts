@@ -10,5 +10,6 @@ router.post('/', chatController.createChat);
 router.get('/', chatController.getUserChats);
 router.post('/message', chatController.sendMessage);
 router.get('/:chatId/messages', chatController.getChatMessages);
+router.delete('/:chatId', chatController.deleteChat);
 
 export default router;

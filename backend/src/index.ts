@@ -5,6 +5,7 @@ import routes from './routes';
 import prisma from './config/prisma';
 import bcrypt from 'bcryptjs';
 import morgan from 'morgan';
+import { errorHandler } from './middleware/error.middleware';
 
 dotenv.config();
 
@@ -31,13 +32,9 @@ const seedAdmin = async (retries = 5) => {
             name: 'Admin Portfolio'
           }
         });
-        console.log('✅ Admin user seeded (admin@example.com / admin123)');
-      } else {
-        console.log('ℹ️ Admin user already exists.');
       }
-      break; // Success!
+      break;
     } catch (error) {
-      console.error(`⏳ Waiting for database... (${retries} retries left)`);
       retries -= 1;
       await new Promise(res => setTimeout(res, 5000)); // Wait 5 seconds
     }
@@ -46,6 +43,9 @@ const seedAdmin = async (retries = 5) => {
 
 // API Routes
 app.use('/api', routes);
+
+// Global Error Handler
+app.use(errorHandler);
 
 // Health Check
 app.get('/health', (req, res) => {

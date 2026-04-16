@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import api from '../services/api';
-import { toast } from 'react-hot-toast';
+import { toast } from 'sonner';
 
 interface Message {
   id: string;
@@ -19,13 +19,13 @@ interface ChatState {
   currentChatId: string | null;
   messages: Message[];
   isLoading: boolean;
-  activeProvider: string;
   
   fetchChats: () => Promise<void>;
   setCurrentChat: (chatId: string) => Promise<void>;
   sendMessage: (content: string) => Promise<void>;
   createChat: (title: string) => Promise<void>;
-  setActiveProvider: (provider: string) => void;
+  deleteChat: (chatId: string) => Promise<void>;
+  reset: () => void;
 }
 
 export const useChatStore = create<ChatState>((set, get) => ({
@@ -33,14 +33,18 @@ export const useChatStore = create<ChatState>((set, get) => ({
   currentChatId: null,
   messages: [],
   isLoading: false,
-  activeProvider: 'gemini',
 
   fetchChats: async () => {
     const res = await api.get('/chats');
-    set({ chats: res.data });
+    const chats = res.data;
+    set({ chats });
+    
+    // Auto-select the most recent chat if none is selected
+    if (chats.length > 0 && !get().currentChatId) {
+      get().setCurrentChat(chats[0].id);
+    }
   },
 
-  setActiveProvider: (provider) => set({ activeProvider: provider }),
 
   setCurrentChat: async (chatId) => {
     set({ currentChatId: chatId, isLoading: true });
@@ -58,8 +62,10 @@ export const useChatStore = create<ChatState>((set, get) => ({
   },
 
   sendMessage: async (content) => {
-    const { currentChatId, activeProvider, messages } = get();
+    const { currentChatId, messages } = get();
     if (!currentChatId) return;
+
+    set({ isLoading: true });
 
     // Optimistic UI
     const tempMessage: Message = {
@@ -74,12 +80,49 @@ export const useChatStore = create<ChatState>((set, get) => ({
       const res = await api.post('/chats/message', {
         chatId: currentChatId,
         content,
-        provider: activeProvider
       });
       set(state => ({ messages: [...state.messages, res.data] }));
+
+      // If it was the first message, refresh chats to get auto-generated title
+      if (messages.length === 0) {
+        get().fetchChats();
+      }
+      set({ isLoading: false });
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to send message');
+      set({ isLoading: false });
+      const serverMessage = error.response?.data?.message || '';
+      if (serverMessage.includes('high demand')) {
+        toast.error('ขณะนี้ MONTO AI มีผู้ใช้งานจำนวนมาก รบกวนลองใหม่อีกครั้งในภายหลังนะครับ');
+      } else {
+        toast.error(serverMessage || 'Failed to send message');
+      }
       console.error(error);
     }
+  },
+
+  deleteChat: async (chatId) => {
+    try {
+      await api.delete(`/chats/${chatId}`);
+      set(state => {
+        const newChats = state.chats.filter(c => c.id !== chatId);
+        const newState: Partial<ChatState> = { chats: newChats };
+        
+        if (state.currentChatId === chatId) {
+          newState.currentChatId = null;
+          newState.messages = [];
+        }
+        
+        return newState;
+      });
+      toast.success('Chat deleted');
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || 'Failed to delete chat';
+      toast.error(errorMessage);
+      console.error('[DEBUG] Delete Chat Error:', error.response?.data || error.message);
+    }
+  },
+
+  reset: () => {
+    set({ chats: [], currentChatId: null, messages: [], isLoading: false });
   }
 }));

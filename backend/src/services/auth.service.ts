@@ -27,7 +27,16 @@ export class AuthService {
       { expiresIn: '7d' }
     );
 
-    return { user: { id: user.id, email: user.email, name: user.name }, token };
+    return { 
+      user: { 
+        id: user.id, 
+        email: user.email, 
+        name: user.name,
+        avatarUrl: user.avatarUrl,
+        systemPrompt: user.systemPrompt
+      }, 
+      token 
+    };
   }
 
   async saveApiKey(userId: string, provider: string, key: string) {

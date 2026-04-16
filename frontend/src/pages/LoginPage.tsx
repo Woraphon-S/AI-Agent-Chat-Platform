@@ -3,7 +3,7 @@ import { useAuthStore } from '../store/auth.store';
 import api from '../services/api';
 import { motion } from 'framer-motion';
 import { Cpu } from 'lucide-react';
-import { toast } from 'react-hot-toast';
+import { toast } from 'sonner';
 
 export const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('admin@example.com');
@@ -30,19 +30,18 @@ export const LoginPage: React.FC = () => {
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 p-4">
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         className="max-w-md w-full bg-white p-10 rounded-[32px] shadow-2xl shadow-gray-200/50 border border-gray-100"
       >
         <div className="flex flex-col items-center mb-10">
           <div className="w-16 h-16 bg-black rounded-2xl flex items-center justify-center mb-6 shadow-lg rotate-3">
-             <Cpu className="text-white w-8 h-8" />
+            <Cpu className="text-white w-8 h-8" />
           </div>
           <h2 className="text-3xl font-extrabold tracking-tight text-gray-900">
             {isRegister ? 'Create Account' : 'Welcome Back'}
           </h2>
-          <p className="text-gray-400 mt-2 text-sm font-medium">The minimalist AI companion</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -78,7 +77,7 @@ export const LoginPage: React.FC = () => {
 
         <p className="text-center mt-8 text-sm font-medium text-gray-400">
           {isRegister ? 'Already have an account?' : "Don't have an account?"}{' '}
-          <button 
+          <button
             onClick={() => setIsRegister(!isRegister)}
             className="text-secondary font-bold hover:underline"
           >
